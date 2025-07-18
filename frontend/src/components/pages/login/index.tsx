@@ -19,7 +19,7 @@ const Login = () => {
       }).unwrap();
       console.log("Login successful:", response);
       Cookies.set("token", response.access_token);
-      router.push("/create-product");
+      router.push("/home/create-product");
     } catch (error) {
       console.error("Login failed:", error);
     }
