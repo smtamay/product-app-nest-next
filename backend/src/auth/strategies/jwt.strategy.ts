@@ -15,6 +15,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   // Method that validates the JWT payload
   validate(payload: { sub: number; email: string }) {
+     console.log('🔥 validate() ejecutado con:', payload);
     return { id: payload.sub, email: payload.email };
   }
 }

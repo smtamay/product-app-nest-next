@@ -20,6 +20,7 @@ export class AuthController {
     id: string;
     email: string;
   } {
+    console.log('🔥 getProfile() ejecutado con:', req.user);
     return req.user;
   }
 }
