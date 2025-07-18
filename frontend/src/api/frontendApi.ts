@@ -18,7 +18,7 @@ export const frontendApi = createApi({
       return headers;
     },
   }),
-
+  tagTypes: ["Products"],
   endpoints: (builder) => ({
     // User authentication endpoints
     login: builder.mutation({
@@ -48,15 +48,17 @@ export const frontendApi = createApi({
         method: "POST",
         body: newProduct,
       }),
+      invalidatesTags: ["Products"],
     }),
     getProductsByUser: builder.query<
-      { data: Product[]; total: number },
+      { products: Product[]; total: number },
       { userId: number; page?: number; limit?: number }
     >({
-      query: ({ userId, page = 1, limit = 5 }) => ({
+      query: ({ userId, page, limit = 5 }) => ({
         url: `/products/user/${userId}?page=${page}&limit=${limit}`,
         method: "GET",
       }),
+      providesTags: ["Products"],
     }),
   }),
 });
