@@ -31,25 +31,42 @@ export class ProductController {
 
   // Route GET /products
   @Get()
-  findAll() {
-    return this.productService.findAll();
+  async findAll(): Promise<ProductResponseDto[]> {
+    const products = await this.productService.findAll();
+    return plainToInstance(ProductResponseDto, products, {
+      excludeExtraneousValues: true,
+    });
   }
 
   // Route GET /products/:id
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.productService.findOne(id);
+    const product = this.productService.findOne(id);
+
+    return plainToInstance(ProductResponseDto, product, {
+      excludeExtraneousValues: true,
+    });
   }
 
   // Route GET /products/user/:userId
   @Get('user/:userId')
-  findByUser(
+  async findByUser(
     @Param('userId', ParseIntPipe) userId: number,
-    @Query('page') page: number = 1,
-    @Query('limit') limit: number = 10,
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
   ) {
-    return this.productService.findByUserPagination(userId, page, limit);
+    const { products, total } = await this.productService.findByUserPagination(userId, page, limit);
+
+    const transformed = plainToInstance(ProductResponseDto, products, {
+      excludeExtraneousValues: true,
+    });
+
+    return {
+      products: transformed,
+      total,
+    };
   }
+
 
   // Route PUT /products/:id
   @Put(':id')
