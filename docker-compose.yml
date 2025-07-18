@@ -7,9 +7,10 @@ services:
       - '3001:3000'
     volumes:
       - ./backend:/app
+      - /app/node_modules  # evita que el host sobrescriba node_modules
     environment:
       - NODE_ENV=development
-    command: npm run start:dev
+    command: pnpm run start:dev
 
   frontend:
     build:
@@ -22,7 +23,7 @@ services:
       - /app/node_modules
     environment:
       - NODE_ENV=development
-    command: npm run dev
+    command: pnpm run dev
     depends_on:
       - backend
 
