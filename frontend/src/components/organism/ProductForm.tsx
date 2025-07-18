@@ -1,7 +1,8 @@
 import { Box, Button, Typography } from "@mui/material";
 import React, { FC } from "react";
 import Input from "../molecules/Input";
-import { useForm } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
+import { Theme } from "@mui/material/styles";
 
 export interface ProductFormData {
   name: string;
@@ -21,14 +22,7 @@ const ProductForm: FC<Props> = ({ onSubmit, title, buttonText }) => {
     handleSubmit,
     formState: { errors, isValid },
     control,
-  } = useForm<Omit<ProductFormData, "userId">>({
-    mode: "all",
-    defaultValues: {
-      name: "",
-      description: "",
-      price: 0,
-    },
-  });
+  } = useFormContext<Omit<ProductFormData, "userId">>();
 
   return (
     <Box
@@ -38,8 +32,10 @@ const ProductForm: FC<Props> = ({ onSubmit, title, buttonText }) => {
         display: "flex",
         flexDirection: "column",
         gap: 2,
-        maxWidth: 400,
         margin: "auto",
+        maxWidth: 400,
+        width: "100%",
+        //backgroundColor: (theme: Theme) => theme.palette.primary.main,
       }}
     >
       <Typography variant="h4" component="h1" gutterBottom>
@@ -47,7 +43,12 @@ const ProductForm: FC<Props> = ({ onSubmit, title, buttonText }) => {
       </Typography>
 
       <Input name="name" control={control} errors={errors} label="Nombre" />
-      <Input name="description" control={control} errors={errors} label="Descripción" />
+      <Input
+        name="description"
+        control={control}
+        errors={errors}
+        label="Descripción"
+      />
       <Input
         name="price"
         control={control}
@@ -56,7 +57,12 @@ const ProductForm: FC<Props> = ({ onSubmit, title, buttonText }) => {
         type="number"
       />
 
-      <Button type="submit" variant="contained" color="primary" disabled={!isValid}>
+      <Button
+        type="submit"
+        variant="contained"
+        color="primary"
+        disabled={!isValid}
+      >
         {buttonText}
       </Button>
     </Box>
