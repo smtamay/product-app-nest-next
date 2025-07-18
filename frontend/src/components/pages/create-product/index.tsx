@@ -1,24 +1,30 @@
 "use client";
-
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import {
   useCreateProductMutation,
   useGetCurrentUserQuery,
 } from "../../../api/frontendApi";
-import ProductForm, { ProductFormData } from "@/components/organism/ProductForm";
-
+import ProductForm, {
+  ProductFormData,
+} from "@/components/organism/ProductForm";
+import ProductsTable from "@/components/organism/ProductsTable";
+import { Box } from "@mui/material";
+import Signout from "@/components/atoms/Signout";
 
 const CreateProductPage = () => {
-  const router = useRouter();
-  const { data: user, isLoading, isError } = useGetCurrentUserQuery(undefined);
+  const { data: user, isLoading } = useGetCurrentUserQuery(undefined);
   const [createProduct] = useCreateProductMutation();
 
-  useEffect(() => {
-    if (isError) {
-      router.push("/login");
-    }
-  }, [isError, router]);
+  const methods = useForm<Omit<ProductFormData, "userId">>({
+    mode: "all",
+    defaultValues: {
+      name: "",
+      description: "",
+      price: 0,
+    },
+  });
+
+  const { reset } = methods;
 
   const handleCreate = async (formData: Omit<ProductFormData, "userId">) => {
     if (!user?.id) return alert("User not authenticated");
@@ -30,6 +36,7 @@ const CreateProductPage = () => {
 
     try {
       await createProduct(fullData).unwrap();
+      reset();
       alert("Product created successfully!");
     } catch (error) {
       console.error("Error creating product:", error);
@@ -40,15 +47,19 @@ const CreateProductPage = () => {
   if (isLoading) return <p>Cargando...</p>;
 
   return (
-    <div>
-    <ProductForm
-      onSubmit={handleCreate}
-      title="Crear producto"
-      buttonText="Crear"
-    />
-    </div>
+    <Box component="div" sx={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      <FormProvider {...methods}>
+        <ProductForm
+          onSubmit={handleCreate}
+          title="Crear producto"
+          buttonText="Crear"
+        />
+      </FormProvider>
+      <ProductsTable />
+      <Signout/>
+    </Box>
   );
 };
 
-export default CreateProductPage;
 
+export default CreateProductPage;
